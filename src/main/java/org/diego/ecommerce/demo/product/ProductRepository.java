@@ -1,6 +1,5 @@
-package org.diego.ecommerce.demo.repositories;
+package org.diego.ecommerce.demo.product;
 
-import org.diego.ecommerce.demo.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {

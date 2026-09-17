@@ -1,4 +1,4 @@
-package org.diego.ecommerce.demo.entities;
+package org.diego.ecommerce.demo.category;
 
 import jakarta.persistence.*;
 

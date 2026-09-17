@@ -1,7 +1,5 @@
-package org.diego.ecommerce.demo.services;
+package org.diego.ecommerce.demo.product;
 
-import org.diego.ecommerce.demo.entities.Product;
-import org.diego.ecommerce.demo.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

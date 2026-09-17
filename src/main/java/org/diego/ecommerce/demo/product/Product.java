@@ -1,6 +1,7 @@
-package org.diego.ecommerce.demo.entities;
+package org.diego.ecommerce.demo.product;
 
 import jakarta.persistence.*;
+import org.diego.ecommerce.demo.category.Category;
 
 import java.math.BigDecimal;
 

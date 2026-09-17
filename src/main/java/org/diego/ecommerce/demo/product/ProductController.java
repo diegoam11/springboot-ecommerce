@@ -1,7 +1,5 @@
-package org.diego.ecommerce.demo.controllers;
+package org.diego.ecommerce.demo.product;
 
-import org.diego.ecommerce.demo.entities.Product;
-import org.diego.ecommerce.demo.services.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
