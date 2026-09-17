@@ -1,8 +1,6 @@
 package org.diego.ecommerce.demo.product;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,7 +14,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAll(){
+    public List<ProductResponse> getAll(){
         return productService.findAll();
+    }
+
+    @PostMapping
+    public ProductResponse create(@RequestBody ProductRequest request){
+        return productService.create(request);
     }
 }
