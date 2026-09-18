@@ -3,6 +3,7 @@ package org.diego.ecommerce.demo.product;
 import org.diego.ecommerce.demo.category.Category;
 import org.diego.ecommerce.demo.category.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.diego.ecommerce.demo.shared.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ProductService {
 
     private Product toProduct(ProductRequest request){
         Category category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found: " + request.categoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + request.categoryId()));
         return new Product(request.name(), request.price(), request.stock(), category);
     }
 
