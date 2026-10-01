@@ -1,6 +1,10 @@
-package org.diego.ecommerce.demo.user;
+package org.diego.ecommerce.demo.auth;
 
 import org.diego.ecommerce.demo.shared.security.JwtService;
+import org.diego.ecommerce.demo.user.Role;
+import org.diego.ecommerce.demo.user.User;
+import org.diego.ecommerce.demo.user.UserDetailsImpl;
+import org.diego.ecommerce.demo.user.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;

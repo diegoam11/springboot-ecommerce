@@ -1,4 +1,4 @@
-package org.diego.ecommerce.demo.user;
+package org.diego.ecommerce.demo.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

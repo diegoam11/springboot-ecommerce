@@ -1,4 +1,4 @@
-package org.diego.ecommerce.demo.user;
+package org.diego.ecommerce.demo.auth;
 
 public record LoginRequest(
         String email,

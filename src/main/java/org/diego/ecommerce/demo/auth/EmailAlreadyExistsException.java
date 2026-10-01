@@ -1,4 +1,4 @@
-package org.diego.ecommerce.demo.user;
+package org.diego.ecommerce.demo.auth;
 
 import org.diego.ecommerce.demo.shared.exception.ApiException;
 import org.springframework.http.HttpStatus;
