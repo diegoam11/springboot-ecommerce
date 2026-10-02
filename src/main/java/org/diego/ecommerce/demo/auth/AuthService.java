@@ -1,9 +1,11 @@
 package org.diego.ecommerce.demo.auth;
 
+import io.jsonwebtoken.JwtException;
 import org.diego.ecommerce.demo.auth.token.RefreshToken;
 import org.diego.ecommerce.demo.auth.token.RefreshTokenService;
 import org.diego.ecommerce.demo.auth.token.TokenPairResponse;
 import org.diego.ecommerce.demo.shared.security.JwtService;
+import org.diego.ecommerce.demo.shared.security.TokenBlacklistService;
 import org.diego.ecommerce.demo.user.Role;
 import org.diego.ecommerce.demo.user.User;
 import org.diego.ecommerce.demo.user.UserDetailsImpl;
@@ -13,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
 public class AuthService {
     private final UserRepository userRepository;
@@ -20,19 +24,22 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             JwtService jwtService,
-            RefreshTokenService refreshTokenService
+            RefreshTokenService refreshTokenService,
+            TokenBlacklistService tokenBlacklistService
     ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     public AuthResponse register(RegisterRequest request){
@@ -78,9 +85,20 @@ public class AuthService {
         return new TokenPairResponse(newAccessToken, newRefreshToken.getToken());
     }
 
-    public void logout(String refreshToken){
+    public void logout(String accessToken, String refreshToken){
         RefreshToken token = refreshTokenService.validate(refreshToken);
         refreshTokenService.revoke(token);
+        blacklistAccessToken(accessToken);
+    }
+
+    private void blacklistAccessToken(String accessToken){
+        try {
+            String jti = jwtService.extractJti(accessToken);
+            Duration ttl = jwtService.getRemainingValidity(accessToken);
+            tokenBlacklistService.blacklist(jti, ttl);
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Access token ya invalido/expirado: no hay nada que blacklistear.
+        }
     }
 
     private AuthResponse toResponse(User user){
