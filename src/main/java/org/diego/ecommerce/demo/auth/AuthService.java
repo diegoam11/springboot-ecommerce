@@ -1,5 +1,8 @@
 package org.diego.ecommerce.demo.auth;
 
+import org.diego.ecommerce.demo.auth.token.RefreshToken;
+import org.diego.ecommerce.demo.auth.token.RefreshTokenService;
+import org.diego.ecommerce.demo.auth.token.TokenPairResponse;
 import org.diego.ecommerce.demo.shared.security.JwtService;
 import org.diego.ecommerce.demo.user.Role;
 import org.diego.ecommerce.demo.user.User;
@@ -16,17 +19,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService
     ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public AuthResponse register(RegisterRequest request){
@@ -41,7 +47,7 @@ public class AuthService {
         );
 
         User saved = userRepository.save(user);
-        return toReponse(saved);
+        return toResponse(saved);
     }
 
     public LoginResponse login(LoginRequest request){
@@ -53,13 +59,31 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalStateException("User not found after authentication"));
 
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
-        String token = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.create(user);
 
-        return new LoginResponse(token, user.getId(), user.getEmail(), user.getRole());
+        return new LoginResponse(accessToken, refreshToken.getToken(), user.getId(), user.getEmail(), user.getRole());
     }
 
+    public TokenPairResponse refresh(String oldRefreshToken){
+        RefreshToken validToken = refreshTokenService.validate(oldRefreshToken);
+        User user = validToken.getUser();
 
-    private AuthResponse toReponse(User user){
+        // Rotacion: el token usado queda inservible, se emite uno nuevo
+        refreshTokenService.revoke(validToken);
+        RefreshToken newRefreshToken = refreshTokenService.create(user);
+
+        String newAccessToken = jwtService.generateToken(new UserDetailsImpl(user));
+
+        return new TokenPairResponse(newAccessToken, newRefreshToken.getToken());
+    }
+
+    public void logout(String refreshToken){
+        RefreshToken token = refreshTokenService.validate(refreshToken);
+        refreshTokenService.revoke(token);
+    }
+
+    private AuthResponse toResponse(User user){
         return new AuthResponse(user.getId(), user.getEmail(), user.getRole());
     }
 }

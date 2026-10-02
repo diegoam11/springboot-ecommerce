@@ -1,6 +1,7 @@
 package org.diego.ecommerce.demo.shared.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.diego.ecommerce.demo.auth.token.InvalidRefreshTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.internalServerError().body(error);
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshToken(InvalidRefreshTokenException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
 }
